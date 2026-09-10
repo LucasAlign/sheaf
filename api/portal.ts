@@ -266,7 +266,7 @@ export default async function handler(req: Request, res: Response) {
       try {
         await sendEmail(
           p.email,
-          "Your secure Sheaf link",
+          "Your secure Bridge link",
           emailTemplate(
             org.name,
             p.need_id

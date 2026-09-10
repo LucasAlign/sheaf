@@ -132,7 +132,7 @@ export default function FulfillmentPanel({
                   const r = await api<{ text: string }>("receipt", {
                     claim_id: c.id,
                   });
-                  downloadText(r.text, "sheaf-donation-receipts.txt");
+                  downloadText(r.text, "bridge-donation-receipts.txt");
                 }
               })
             }

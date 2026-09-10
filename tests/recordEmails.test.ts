@@ -117,7 +117,7 @@ it("emails the donor the annual snapshot as a downloadable attachment", async ()
   });
   const call = vi.mocked(sendEmail).mock.calls[0];
   expect(call[0]).toBe("giver@example.org");
-  expect(call[4]![0].filename).toBe("sheaf-giving-2025.txt");
+  expect(call[4]![0].filename).toBe("bridge-giving-2025.txt");
   expect(Buffer.from(call[4]![0].content, "base64").toString()).toContain(
     "Total funds received: $25.00",
   );

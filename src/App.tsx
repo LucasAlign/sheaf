@@ -1,3 +1,4 @@
+import BridgeMark from "./BridgeMark";
 import {
   createContext,
   useContext,
@@ -33,7 +34,6 @@ import {
   UserRound,
   Utensils,
   Wallet,
-  Wheat,
   X,
   LogOut,
   Mail,
@@ -393,15 +393,15 @@ export default function App() {
         <div className="header-inner">
           <button
             className="brand"
-            aria-label="Sheaf home"
+            aria-label="Bridge home"
             onClick={() => {
               setView("admin");
               resetFilters();
             }}
           >
-            <Wheat size={31} strokeWidth={1.4} />
+            <BridgeMark size={31} />
             <span>
-              sheaf<span className="brand-dot">.</span>
+              Bridge
             </span>
           </button>
           <div className="brand-divider" />
@@ -882,7 +882,7 @@ export default function App() {
             {view === "feed" && (
               <section className="care-note">
                 <span className="care-emblem">
-                  <Wheat size={35} strokeWidth={1.2} />
+                  <BridgeMark size={35} />
                 </span>
                 <div>
                   <h2>You don’t have to do everything.</h2>
@@ -900,10 +900,10 @@ export default function App() {
         )}
         <footer>
           <div>
-            <Wheat size={20} />
+            <BridgeMark size={20} />
             <span>Little by little. Together.</span>
           </div>
-          <span>Sheaf · {org.name}</span>
+          <span>Bridge · {org.name}</span>
           <button
             onClick={() => (view === "admin" ? setView("feed") : enterAdmin())}
           >

@@ -1,6 +1,6 @@
-# Sheaf
+# Bridge
 
-An admin-first needs and volunteer outreach portal for **Keystone Family Alliance**, serving Pennsylvania. Caseworkers verify needs, Sheaf selects volunteers in small waves, and volunteers claim through secure email links. The public feed is a secondary route at `/?view=feed`.
+An admin-first needs and volunteer outreach portal for **Keystone Family Alliance**, serving Pennsylvania. Caseworkers verify needs, Bridge selects volunteers in small waves, and volunteers claim through secure email links. The public feed is a secondary route at `/?view=feed`.
 
 React 19 + Vite + Tailwind 4, Supabase/PostgreSQL/PostGIS, Resend, and a portable Node server for Replit. Vercel API routes and cron configuration are also included.
 
@@ -46,7 +46,7 @@ npm test
 npm run build
 ```
 
-Database integration tests require a fresh, disposable PostGIS database whose name begins with `sheaf_test_`. They refuse to run against other names or an initialized Sheaf schema.
+Database integration tests require a fresh, disposable PostGIS database whose name begins with `sheaf_test_`. They refuse to run against other names or an initialized Bridge schema.
 
 ```sh
 TEST_DATABASE_URL=postgresql://postgres:password@localhost:5432/sheaf_test_run npm run test:db

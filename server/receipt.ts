@@ -39,6 +39,6 @@ export function buildReceipt({
     "",
     "No goods or services were provided by the organization in exchange for this contribution.",
     "Please retain this acknowledgment for your records.",
-    "Sheaf does not determine the deductibility or value of a contribution.",
+    "Bridge does not determine the deductibility or value of a contribution.",
   ].join("\n");
 }

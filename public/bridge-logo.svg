@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 140" role="img" aria-labelledby="title desc">
+  <title id="title">Bridge</title>
+  <desc id="desc">Two pine bridge spans joined by a clay keystone, beside the Bridge wordmark.</desc>
+  <g transform="translate(16 22) scale(1.5)">
+    <path d="M7 49V35C7 21 15 11 27 9V19C21 21 17 27 17 35V49H7ZM57 49V35C57 21 49 11 37 9V19C43 21 47 27 47 35V49H57Z" fill="#0E5A52"/>
+    <rect x="28" y="8" width="8" height="12" rx="3" fill="#DC7A46"/>
+    <path d="M5 51H21M43 51H59" fill="none" stroke="#0E5A52" stroke-width="4" stroke-linecap="round"/>
+    <path d="M22 39H42" stroke="#DC7A46" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <text x="133" y="96" fill="#0E5A52" font-family="Fraunces, Georgia, serif" font-size="76" letter-spacing="-3">Bridge</text>
+</svg>

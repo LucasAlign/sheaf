@@ -217,7 +217,7 @@ export default async function handler(req: Request, res: Response) {
             title,
             body,
             firstLink,
-            promotional ? "Review & confirm my help" : "Open Sheaf",
+            promotional ? "Review & confirm my help" : "Open Bridge",
           ),
           notification.id,
         );

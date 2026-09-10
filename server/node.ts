@@ -28,7 +28,7 @@ createServer(async(incoming,outgoing)=>{
   res.setHeader('Content-Type',mime[extname(path)]||'application/octet-stream');res.setHeader('Cache-Control',path.includes(`${sep}assets${sep}`)?'public, max-age=31536000, immutable':'no-cache');
   res.end(req.method==='HEAD'?undefined:await readFile(path));
  }catch{if(!res.headersSent)res.status(404).json({error:'Not found'});else res.end();}
-}).listen(Number(process.env.PORT||5173),'0.0.0.0',()=>console.log(`Sheaf is running on port ${process.env.PORT||5173}`));
+}).listen(Number(process.env.PORT||5173),'0.0.0.0',()=>console.log(`Bridge is running on port ${process.env.PORT||5173}`));
 // Reserved VM only; autoscale hosts should use the standalone scheduled script.
 if(process.env.SHEAF_RUN_SCHEDULER==='true'){
  if(!process.env.CRON_SECRET)throw new Error('CRON_SECRET is required for the scheduler.');

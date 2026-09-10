@@ -13,13 +13,13 @@ Create a dedicated project. Run these files, in order, in the SQL editor (or app
 
 For an existing installation with migrations 001–003 applied, apply only 004 and 005; do not rerun the initial schema or seed. Migration 005 creates the private `need-photos` Storage bucket (5 MB, JPEG/PNG/WebP).
 
-The migration enables PostGIS in `extensions`. Use a dedicated database/project; the initial grants deliberately close direct client writes to Sheaf tables. If an existing project has PostGIS in another schema, adapt the extension schema explicitly before migration.
+The migration enables PostGIS in `extensions`. Use a dedicated database/project; the initial grants deliberately close direct client writes to Bridge tables. If an existing project has PostGIS in another schema, adapt the extension schema explicitly before migration.
 
 The seed creates Keystone Family Alliance only, with no real family data and no invented needs. Organization ID: `c3206037-3638-4263-b18d-813a5895f1c8`.
 
 Invite the first staff user through Supabase Auth. Add their actual Auth user UUID to `organization_members` using the commented example in the seed file. No signup form can grant caseworker access. All staff can approve; self-approval is allowed in this MVP, while `created_by` and `approved_by` remain recorded.
 
-Configure Supabase Auth’s site URL and allowed redirects to your exact deployment origin. Configure production SMTP (Resend SMTP may be used) for staff magic links. Volunteer links use Sheaf’s Resend integration independently of Supabase Auth. There is no requirement to enable anonymous Supabase Auth users.
+Configure Supabase Auth’s site URL and allowed redirects to your exact deployment origin. Configure production SMTP (Resend SMTP may be used) for staff magic links. Volunteer links use Bridge’s Resend integration independently of Supabase Auth. There is no requirement to enable anonymous Supabase Auth users.
 
 Update the organization’s real `contact_email` and verified `ein` before issuing contribution acknowledgments. The frontend reads the public name and service area from this record.
 

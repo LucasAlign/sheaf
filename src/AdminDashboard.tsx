@@ -1,3 +1,4 @@
+import BridgeMark from "./BridgeMark";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -15,7 +16,6 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
-  Wheat,
 } from "lucide-react";
 import type { Need, Status } from "./types";
 import { api, live } from "./client";
@@ -361,10 +361,10 @@ export default function AdminDashboard({
                   </table>
                   {!needs.length && (
                     <div className="empty-state">
-                      <Wheat size={30} />
+                      <BridgeMark size={30} />
                       <h3>Your first need starts a connection.</h3>
                       <p>
-                        Post a need, verify it, and let Sheaf find volunteers
+                        Post a need, verify it, and let Bridge find volunteers
                         who fit.
                       </p>
                       <button className="button primary" onClick={post}>
@@ -530,13 +530,13 @@ export default function AdminDashboard({
               </button>
             </section>
             <div className="admin-quote">
-              <Wheat size={25} strokeWidth={1.3} />
+              <BridgeMark size={25} />
               <p>
-                “Leave a little.
+                “A need on one side.
                 <br />
-                Make room for a lot.”
+                A neighbor on the other.”
               </p>
-              <span>THE HEART BEHIND SHEAF</span>
+              <span>THE HEART BEHIND BRIDGE</span>
             </div>
           </aside>
         </div>

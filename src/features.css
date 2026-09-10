@@ -504,3 +504,8 @@
     padding: 13px;
   }
 }
+
+/* Bridge wordmark keeps the icon legible at every header size. */
+.brand { gap: 9px; }
+.brand > svg { width: 38px; height: 38px; }
+.brand > span { letter-spacing: -1.8px; font-weight: 550; }

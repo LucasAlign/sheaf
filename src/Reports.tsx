@@ -290,7 +290,7 @@ export default function Reports({
                         );
                   downloadText(
                     text,
-                    `sheaf-${tab}-${from}-to-${to}.csv`,
+                    `bridge-${tab}-${from}-to-${to}.csv`,
                     "text/csv;charset=utf-8",
                   );
                 }}
@@ -479,7 +479,7 @@ export default function Reports({
                                 ).text
                               : "DEMO — NOT A TAX RECEIPT\n" +
                                 buildAnnualStatement(s.snapshot);
-                            downloadText(text, `sheaf-${s.year}-statement.txt`);
+                            downloadText(text, `bridge-${s.year}-statement.txt`);
                           } catch (e) {
                             setError((e as Error).message);
                           }

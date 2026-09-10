@@ -68,7 +68,7 @@ export async function deliverRecordEmail(
     to = volunteer.email;
     title = "Thank you. Your donation receipt is here.";
     text = buildReceipt({ org, volunteer, need, contribution: gift });
-    filename = `sheaf-receipt-${gift.id}.txt`;
+    filename = `bridge-receipt-${gift.id}.txt`;
   } else if (n.kind === "annual_statement") {
     const v = await one(
       db
@@ -81,7 +81,7 @@ export async function deliverRecordEmail(
     to = v.email;
     title = `Your ${n.payload.snapshot.year} annual giving statement`;
     text = buildAnnualStatement(n.payload.snapshot);
-    filename = `sheaf-giving-${n.payload.snapshot.year}.txt`;
+    filename = `bridge-giving-${n.payload.snapshot.year}.txt`;
   } else {
     to = org.contact_email;
     if (n.recipient_user_id) {
@@ -100,7 +100,7 @@ export async function deliverRecordEmail(
     title,
     `<div style="white-space:pre-line">${escapeHtml(text)}</div>`,
     `${appUrl}/${n.kind === "need_completed" ? "" : "?view=feed"}`,
-    n.kind === "need_completed" ? "Open your workspace" : "Open Sheaf",
+    n.kind === "need_completed" ? "Open your workspace" : "Open Bridge",
   );
   await sendEmail(
     to,
