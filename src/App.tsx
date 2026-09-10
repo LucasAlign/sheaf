@@ -1,3 +1,4 @@
+import BridgeWordmark from "./BridgeWordmark";
 import BridgeMark from "./BridgeMark";
 import {
   createContext,
@@ -399,10 +400,7 @@ export default function App() {
               resetFilters();
             }}
           >
-            <BridgeMark size={31} />
-            <span>
-              Bridge
-            </span>
+            <BridgeWordmark />
           </button>
           <div className="brand-divider" />
           <div className="org-lockup">
