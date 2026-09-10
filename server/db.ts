@@ -11,7 +11,7 @@ export type DB = ReturnType<typeof database>;
 export async function result<T>(query: PromiseLike<{data:T;error:{message:string;code?:string}|null}>):Promise<T> {
  const {data,error}=await query;
  if(error) {
-  const safe=['This need is no longer available','Choose a listed way to help','This link has expired or has already been used','This status change is not allowed'];
+  const safe=['This need is no longer available','Choose a listed way to help','This link has expired or has already been used','This status change is not allowed','Not enough quantity remains','Confirm each delivery before completing the need','Choose a valid delivered quantity for your claim','Confirmed quantity must be within the commitment','Requested quantity cannot be below existing commitments','Configure the organization EIN before emailing donation receipts','Receipts cannot exceed confirmed contributions','Choose a completed calendar year'];
   if(safe.includes(error.message)) throw new HttpError(409,error.message);
   if(error.code==='23505') throw new HttpError(409,'This record already exists. Please refresh and try again.');
   throw new HttpError(500,'We couldn’t save or load this information. Please try again.');
@@ -28,4 +28,4 @@ export async function identity(req:Request,db:DB,org:string) {
  return {userId,staff,volunteerId};
 }
 export async function limit(db:DB,key:string,max:number,seconds:number) { const allowed=await result(db.rpc('take_rate_limit',{p_key:hashToken(key),p_limit:max,p_seconds:seconds}));if(!allowed)throw new HttpError(429,'Too many requests. Please wait before trying again.'); }
-export const safeNeedFields='id,title,category,description,urgency,service_area,ways_to_help,capability_tags,needed_by,window_start,window_end,status,approved_at,created_at';
+export const safeNeedFields='id,title,category,description,urgency,service_area,ways_to_help,capability_tags,needed_by,window_start,window_end,status,approved_at,created_at,quantity_required,quantity_committed,quantity_received,unit_label,public_location,poster_name,photo_path,photo_alt,photo_approved_at';
