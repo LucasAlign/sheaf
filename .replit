@@ -1,0 +1,12 @@
+entrypoint = "src/App.tsx"
+run = "npm run dev"
+modules = ["nodejs-22"]
+
+[deployment]
+build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "npm run start"]
+deploymentTarget = "autoscale"
+
+[[ports]]
+localPort = 5173
+externalPort = 80

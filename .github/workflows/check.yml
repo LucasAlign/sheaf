@@ -1,0 +1,34 @@
+name: Check Sheaf
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_PASSWORD: sheaf-test-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Create isolated test database
+        run: node --input-type=module -e "import pg from 'pg'; const c=new pg.Client({connectionString:process.env.ADMIN_TEST_URL}); await c.connect(); await c.query('CREATE DATABASE sheaf_test_ci TEMPLATE template0'); await c.end();"
+        env:
+          ADMIN_TEST_URL: postgresql://postgres:sheaf-test-only@localhost:5432/postgres
+      - run: npm run test:db
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:sheaf-test-only@localhost:5432/sheaf_test_ci

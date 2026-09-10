@@ -1,0 +1,3 @@
+import { it,expect,vi } from 'vitest';
+import { registerSheafTools } from '../src/webmcp';
+it('need navigation exposes only accessible IDs and cleans up its registration',()=>{let tool:any;let signal:AbortSignal|undefined;const show=vi.fn();const cleanup=registerSheafTools({registerTool:(t,o)=>{tool=t;signal=o.signal;}},show,['need-1']);expect(tool.name).toBe('show_sheaf_need');expect(tool.execute({need_id:'need-1'})).toEqual({opened:'need-1'});expect(show).toHaveBeenCalledExactlyOnceWith('need-1');expect(()=>tool.execute({need_id:'private-need'})).toThrow();expect(()=>tool.execute({need_id:'need-1',approve:true})).toThrow();expect(show).toHaveBeenCalledTimes(1);cleanup();expect(signal?.aborted).toBe(true);});
