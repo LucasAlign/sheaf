@@ -102,6 +102,8 @@ export async function deliverRecordEmail(
     n.kind === "need_completed" ? "Open your workspace" : "Open Bridge",
   );
   await sendEmail(
+    db,
+    orgId,
     to,
     `${org.name}: ${title}`,
     html,

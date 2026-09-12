@@ -4,6 +4,7 @@ import {
   constantEqual,
   escapeHtml,
   emailClaimToken,
+  emailSigningSecret,
   hashToken,
 } from "../server/security";
 import { emailTemplate, sendEmail } from "../server/email";
@@ -12,10 +13,21 @@ export default async function handler(req: Request, res: Response) {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "GET")
     return res.status(405).json({ error: "Method not allowed" });
-  const secret = process.env.CRON_SECRET;
+  const stagingRun =
+    process.env.BRIDGE_EMAIL_TRANSPORT === "capture" &&
+    process.env.NODE_ENV !== "production" &&
+    req.headers["x-bridge-staging-run"] === "capture";
+  const secret =
+    process.env.CRON_SECRET ||
+    (process.env.BRIDGE_EMAIL_TRANSPORT === "capture" &&
+    process.env.NODE_ENV !== "production"
+      ? process.env.SESSION_SECRET
+      : undefined);
   if (
+    !stagingRun &&
     !secret ||
-    !constantEqual(req.headers.authorization || "", `Bearer ${secret}`)
+    (!stagingRun &&
+      !constantEqual(req.headers.authorization || "", `Bearer ${secret}`))
   )
     return res.status(401).json({ error: "Unauthorized" });
   try {
@@ -177,7 +189,7 @@ export default async function handler(req: Request, res: Response) {
         for (const [index, n] of needs.entries()) {
           if (promotional) {
             const token = emailClaimToken(
-              process.env.LINK_SIGNING_SECRET || "",
+              emailSigningSecret(),
               notification.id,
               n.id,
             );
@@ -210,6 +222,8 @@ export default async function handler(req: Request, res: Response) {
         }
         const body = `<p>Hi ${escapeHtml(v.name)},</p><ul>${items.join("")}</ul>${promotional ? "<p>These needs fit your profile. Follow a secure link and confirm your help—no account or password needed. A need may be claimed before you arrive.</p>" : `<p>Your caseworker can coordinate next steps at ${escapeHtml(org.contact_email)}.</p>`}`;
         await sendEmail(
+          db,
+          c.org,
           v.email,
           `${org.name}: ${title}`,
           emailTemplate(

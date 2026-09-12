@@ -1,1 +1,2 @@
 - [API runtime entrypoint](api-runtime-entrypoint.md) — verify the managed API workflow’s actual entrypoint before changing routes; the active raw HTTP adapter can differ from the unused Express scaffold.
+- [Captured email transport](captured-email-transport.md) — serialize attachment arrays explicitly before inserting captured messages into PostgreSQL JSONB.

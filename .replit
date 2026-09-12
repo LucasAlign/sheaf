@@ -21,3 +21,17 @@ timeoutMs = 20000
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+APP_URL = "https://bb14f784-6b1d-4a63-b251-f578a0cca175-00-1c797jqtmw0tr-ixt2mkys.janeway.replit.dev"
+BRIDGE_ORGANIZATION_NAME = "Keystone Family Alliance"
+BRIDGE_SERVICE_AREA = "Pennsylvania"
+SHEAF_ORG_ID = "c3206037-3638-4263-b18d-813a5895f1c8"
+SHEAF_RUN_SCHEDULER = "false"
+VITE_DATA_MODE = "live"
+BRIDGE_CONTACT_EMAIL = "bridge-contact@example.test"
+EMAIL_FROM = "Bridge Staging <no-reply@example.test>"
+BRIDGE_EIN = "STAGING-TEST-EIN"
+BRIDGE_EMAIL_TRANSPORT = "capture"

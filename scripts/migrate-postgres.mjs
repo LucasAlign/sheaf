@@ -1,8 +1,13 @@
 import { readFile, readdir } from "node:fs/promises";
+import { resolve } from "node:path";
 import pg from "pg";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL is required.");
+
+const migrationDirectory = resolve(
+  process.env.BRIDGE_MIGRATIONS_DIR || ".migration-backup/supabase/migrations",
+);
 
 const pool = new pg.Pool({ connectionString, max: 1 });
 const client = await pool.connect();
@@ -28,10 +33,10 @@ try {
   const applied = new Set(
     (await client.query("select version from public.bridge_migrations")).rows.map((row) => row.version),
   );
-  const files = (await readdir("supabase/migrations")).filter((file) => file.endsWith(".sql")).sort();
+  const files = (await readdir(migrationDirectory)).filter((file) => file.endsWith(".sql")).sort();
   for (const file of files) {
     if (applied.has(file)) continue;
-    const sql = await readFile(`supabase/migrations/${file}`, "utf8");
+    const sql = await readFile(resolve(migrationDirectory, file), "utf8");
     await client.query("begin");
     try {
       await client.query(sql);

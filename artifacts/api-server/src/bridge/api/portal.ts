@@ -270,6 +270,8 @@ export default async function handler(req: Request, res: Response) {
       const link = `${c.appUrl}/#token=${token}${p.need_id ? `&need=${p.need_id}` : ""}`;
       try {
         await sendEmail(
+          db,
+          c.org,
           p.email,
           "Your secure Bridge link",
           emailTemplate(

@@ -55,12 +55,15 @@ Copy names from `.env.example`; enter values in Replit Secrets, not Git or chat:
 | `APP_URL` | Exact public HTTPS origin, without a trailing slash |
 | `RESEND_API_KEY` | Resend server API key |
 | `EMAIL_FROM` | Keystone Family Alliance &lt;care@your-verified-domain.org&gt; |
+| `BRIDGE_EMAIL_TRANSPORT` | `resend` in production; `capture` only for development staging |
 | `CRON_SECRET` | A cryptographically random secret of at least 32 characters |
 | `LINK_SIGNING_SECRET` | A different cryptographically random secret of at least 32 characters |
 
 Generate independent random secrets locally, for example with Node’s `crypto.randomBytes(32).toString('hex')`. Rotating `LINK_SIGNING_SECRET` changes future email link derivations; already-issued hashed tokens remain valid until expiration.
 
 Verify your sending domain in Resend. Claims and invitations fail visibly if email delivery is not configured; they do not pretend a message was sent. Keep production email settings separate from demo environments.
+
+For development staging, set `BRIDGE_EMAIL_TRANSPORT=capture`. Messages are written to the PostgreSQL `captured_emails` table and are never sent to a provider. In this mode, the worker can use the development-only staging trigger header, and claim-link signing derives a domain-separated key from `SESSION_SECRET` when `LINK_SIGNING_SECRET` is absent. Capture mode is rejected when `NODE_ENV=production`.
 
 Build with `npm run build`, start with `npm run start`. The server listens on `PORT` or 5173 and binds to `0.0.0.0`.
 
