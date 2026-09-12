@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Bridge"
+description = "A community support app that helps foster families find verified needs and lets neighbors offer practical help through a simple local feed."
+version = "1.0.0"
+id = "artifacts/bridge"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20043
+
+[services.development]
+run = "pnpm --filter @workspace/bridge run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bridge", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/bridge/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20043"
+BASE_PATH = "/"
