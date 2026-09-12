@@ -1,7 +1,7 @@
 kind = "web"
 previewPath = "/"
 title = "Bridge"
-description = "A community support app that helps foster families find verified needs and lets neighbors offer practical help through a simple local feed."
+description = "A community-of-care app that helps caseworkers post verified needs and lets volunteers find, claim, and follow through on ways to help local families."
 version = "1.0.0"
 id = "artifacts/bridge"
 router = "path"

@@ -174,6 +174,7 @@ export default function App() {
       const id = setTimeout(() => setToast(""), 6000);
       return () => clearTimeout(id);
     }
+    return undefined;
   }, [toast]);
   async function refresh() {
     if (!live) return;

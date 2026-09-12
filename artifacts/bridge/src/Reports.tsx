@@ -11,7 +11,7 @@ import type { Need, ReportData, Statement } from "./types";
 import { counties } from "./counties";
 import { csvFile, downloadText } from "./reportExport";
 import { demoReport, demoRecords, generateDemoAnnual } from "./demoRecords";
-import { buildAnnualStatement } from "../server/reports";
+import { buildAnnualStatement } from "./server/reports";
 export default function Reports({
   needs,
   orgName,
