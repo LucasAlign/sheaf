@@ -2,7 +2,7 @@
 
 An admin-first needs and volunteer outreach portal for **Keystone Family Alliance**, serving Pennsylvania. Caseworkers verify needs, Bridge selects volunteers in small waves, and volunteers claim through secure email links. The public feed is a secondary route at `/?view=feed`.
 
-React 19 + Vite + Tailwind 4, Supabase/PostgreSQL/PostGIS, Resend, and a portable Node server for Replit. Vercel API routes and cron configuration are also included.
+React 19 + Vite + Tailwind 4, portable PostgreSQL/PostGIS, Supabase Auth and Storage, Resend, and a Node server for Replit. The data module uses `DATABASE_URL` on Replit and AWS; the legacy Supabase data adapter remains available when that variable is absent. Vercel API routes and cron configuration are also included.
 
 ## Run the interactive preview
 
@@ -21,6 +21,8 @@ The default screen is the caseworker dashboard: Overview, Needs pipeline, Email 
 2. Run `npm install`, then press Run. The admin demo opens immediately.
 3. For a deployed demo, use build command `npm run build` and run command `npm run start`. The Node server serves the built frontend and `/api/*` together. Do not use the Vite development server as a production server.
 4. Follow [the live setup guide](docs/SETUP.md) when ready to connect real data, invite staff, and enable email. Keep secret values in Replit Secrets.
+
+For live data, add Replit Database and run `npm run db:migrate`. Replit provides `DATABASE_URL` automatically. The same application data module and migrations can later target AWS RDS PostgreSQL by changing that variable.
 
 Changing `VITE_*` values requires rebuilding the frontend. Setting `VITE_DATA_MODE=live` makes configuration errors visible; live mode never silently substitutes sample data.
 

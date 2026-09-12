@@ -4,6 +4,14 @@
 
 Admin is the primary workspace. Email is the primary volunteer entry point. A secondary, branded public feed remains available for discovery, filters and repeat volunteers. The organization record holds the deployment’s brand and contact settings; each deployment uses exactly one server-configured `SHEAF_ORG_ID`.
 
+## Data portability
+
+The server selects its data adapter at startup. `DATABASE_URL` uses the native PostgreSQL adapter for Replit Database or AWS RDS; when it is absent, the legacy Supabase data adapter is retained for existing installations. Both adapters expose the same query and stored-function behavior to the application routes.
+
+Authentication and private photo storage are separate from the data adapter. The current identity and object-storage adapter uses Supabase Auth and Storage, so moving application data does not change staff or volunteer authorization behavior. Those facilities can be replaced independently later.
+
+Schema behavior remains in PostgreSQL migrations and stored functions, including atomic claims, fulfillment quantities, queue leases and matching. The portable migration runner records applied files in `bridge_migrations` and never reapplies them. PostgreSQL and PostGIS are therefore requirements for both Replit and the eventual AWS RDS database.
+
 ## Trust and identity
 
 The browser has only the Supabase public key for staff Auth. Server routes verify staff JWTs with Supabase and consult `organization_members`. No role is taken from client-editable metadata. All application reads and writes are filtered by the configured organization; composite foreign keys reject cross-organization references.

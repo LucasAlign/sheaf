@@ -3,6 +3,7 @@ import { emailTemplate, sendEmail } from "./email";
 import { buildReceipt } from "./receipt";
 import { buildAnnualStatement } from "./reports";
 import { escapeHtml } from "./security";
+import { staffEmail } from "./platform";
 type Notice = {
   id: string;
   kind: string;
@@ -85,12 +86,10 @@ export async function deliverRecordEmail(
   } else {
     to = org.contact_email;
     if (n.recipient_user_id) {
-      const { data, error } = await db.auth.admin.getUserById(
-        n.recipient_user_id,
-      );
-      if (error || !data.user.email)
+      const email = await staffEmail(n.recipient_user_id, db);
+      if (!email)
         throw new Error("Posting social worker email is unavailable");
-      to = data.user.email;
+      to = email;
     }
     title = "The need you posted has been met.";
     text = `${n.payload.title}\n\n${n.payload.quantity} ${n.payload.unit_label} confirmed received.\nA caseworker has verified fulfillment. Thank you for helping this family find the support they needed.`;

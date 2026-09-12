@@ -12,6 +12,7 @@ import {
 import { validatePhoto } from "./photos";
 import { buildReceipt } from "./receipt";
 import { buildAnnualStatement } from "./reports";
+import { createPhotoUpload } from "./platform";
 type Context = {
   db: DB;
   org: string;
@@ -38,8 +39,8 @@ export async function extendedAction(
       .eq("need_id", p.need_id);
     if (!isStaff) q = q.eq("volunteer_id", volunteer());
     const claims = await result(q.order("created_at"));
-    const ids = (claims || []).map((c) => c.volunteer_id),
-      cids = (claims || []).map((c) => c.id);
+    const ids = (claims || []).map((c: any) => c.volunteer_id),
+      cids = (claims || []).map((c: any) => c.id);
     const contacts = ids.length
       ? await result(
           db
@@ -59,13 +60,13 @@ export async function extendedAction(
         )
       : [];
     return ok({
-      claims: (claims || []).map((c) => ({
+      claims: (claims || []).map((c: any) => ({
         ...c,
-        name: contacts?.find((v) => v.id === c.volunteer_id)?.name,
-        email: contacts?.find((v) => v.id === c.volunteer_id)?.email,
+        name: contacts?.find((v: any) => v.id === c.volunteer_id)?.name,
+        email: contacts?.find((v: any) => v.id === c.volunteer_id)?.email,
         receipted_quantity: (gifts || [])
-          .filter((g) => g.claim_id === c.id)
-          .reduce((s, g) => s + g.quantity, 0),
+          .filter((g: any) => g.claim_id === c.id)
+          .reduce((s: number, g: any) => s + g.quantity, 0),
       })),
     });
   }
@@ -180,7 +181,7 @@ export async function extendedAction(
     );
     return ok({
       text: gifts
-        .map((g) =>
+        .map((g: any) =>
           buildReceipt({ org: o, volunteer: v, need: n, contribution: g }),
         )
         .join("\n\n--------------------\n\n"),
@@ -216,7 +217,7 @@ export async function extendedAction(
         .order("generated_at", { ascending: false }),
     );
     const keys = (statements || []).map(
-      (s) => `annual:${s.id}:${s.content_hash}`,
+      (s: any) => `annual:${s.id}:${s.content_hash}`,
     );
     const emails = keys.length
       ? await result(
@@ -228,11 +229,11 @@ export async function extendedAction(
         )
       : [];
     return ok({
-      statements: (statements || []).map((s) => ({
+      statements: (statements || []).map((s: any) => ({
         ...s,
         email_status:
           emails?.find(
-            (n) => n.dedupe_key === `annual:${s.id}:${s.content_hash}`,
+            (n: any) => n.dedupe_key === `annual:${s.id}:${s.content_hash}`,
           )?.status || "not queued",
       })),
     });
@@ -290,9 +291,7 @@ export async function extendedAction(
         .from("need_photo_uploads")
         .insert({ path, organization_id: org, uploaded_by: user }),
     );
-    const data = await one(
-      db.storage.from("need-photos").createSignedUploadUrl(path),
-    );
+    const data = await createPhotoUpload(path);
     return ok({ path, token: data.token });
   }
   if (action === "attach-photo") {

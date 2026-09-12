@@ -1,5 +1,6 @@
-import { one, result, type DB } from "./db";
+import { one, type DB } from "./db";
 import { HttpError } from "./http";
+import { downloadPhoto, signedPhotoUrls } from "./platform";
 export function validPhotoBytes(bytes: Uint8Array) {
   const jpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
   const png = [137, 80, 78, 71, 13, 10, 26, 10].every((n, i) => bytes[i] === n);
@@ -28,7 +29,7 @@ export async function validatePhoto(
       .eq("path", path)
       .single(),
   );
-  const blob = await one(db.storage.from("need-photos").download(path));
+  const blob = await downloadPhoto(path);
   if (
     blob.size > 5242880 ||
     !validPhotoBytes(new Uint8Array(await blob.arrayBuffer()))
@@ -47,9 +48,7 @@ export async function needPhotoUrls(
     .filter((n) => n.photo_path && (staff || n.photo_approved_at))
     .map((n) => n.photo_path!);
   if (!paths.length) return new Map<string, string>();
-  const data = await result(
-    db.storage.from("need-photos").createSignedUrls([...new Set(paths)], 900),
-  );
+  const data = await signedPhotoUrls([...new Set(paths)]);
   return new Map(
     (data || [])
       .filter((x) => x.signedUrl && x.path)

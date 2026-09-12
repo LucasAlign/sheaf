@@ -1,8 +1,22 @@
 # Live setup for Keystone Family Alliance
 
-## 1. Supabase
+## 1. Replit PostgreSQL
 
-Create a dedicated project. Run these files, in order, in the SQL editor (or apply with the Supabase CLI):
+Add Replit Database to the Bridge project. Replit provides its connection string as `DATABASE_URL`; do not copy it into source control.
+
+Set `SHEAF_ORG_ID` and, for initial organization setup, `BRIDGE_CONTACT_EMAIL`. Then run:
+
+```sh
+npm run db:migrate
+```
+
+The runner bootstraps the compatibility roles used by the existing security schema, applies every SQL file in `supabase/migrations` once, and records each version in `bridge_migrations`. It requires PostgreSQL with PostGIS and `pgcrypto`. If Replit does not allow either extension in the selected database tier, stop rather than weakening distance matching or token hashing.
+
+Create a separate production database when publishing. Do not point a published app at the development database. For the later AWS move, provision PostgreSQL with PostGIS on RDS, restore a database dump, run `npm run db:migrate`, and change only `DATABASE_URL`.
+
+## 2. Supabase Auth and Storage
+
+Create a dedicated Supabase project for staff Auth and private photo Storage. New Replit-backed installations apply the SQL files through `npm run db:migrate`; existing Supabase-backed installations can continue applying them in the SQL editor or Supabase CLI:
 
 1. `supabase/migrations/202609100001_sheaf.sql`
 2. `supabase/migrations/202609100002_delivery.sql`
@@ -17,19 +31,20 @@ The migration enables PostGIS in `extensions`. Use a dedicated database/project;
 
 The seed creates Keystone Family Alliance only, with no real family data and no invented needs. Organization ID: `c3206037-3638-4263-b18d-813a5895f1c8`.
 
-Invite the first staff user through Supabase Auth. Add their actual Auth user UUID to `organization_members` using the commented example in the seed file. No signup form can grant caseworker access. All staff can approve; self-approval is allowed in this MVP, while `created_by` and `approved_by` remain recorded.
+Invite the first staff user through Supabase Auth. For a Replit-backed installation, add that Auth UUID to both `auth.users` and `organization_members` in the Replit database; the commented membership example in the seed shows the organization and role values. Existing Supabase-backed installations add it in Supabase as before. No signup form can grant caseworker access. All staff can approve; self-approval is allowed in this MVP, while `created_by` and `approved_by` remain recorded.
 
 Configure Supabase Auth’s site URL and allowed redirects to your exact deployment origin. Configure production SMTP (Resend SMTP may be used) for staff magic links. Volunteer links use Bridge’s Resend integration independently of Supabase Auth. There is no requirement to enable anonymous Supabase Auth users.
 
 Update the organization’s real `contact_email` and verified `ein` before issuing contribution acknowledgments. The frontend reads the public name and service area from this record.
 
-## 2. Replit Secrets
+## 3. Replit Secrets
 
 Copy names from `.env.example`; enter values in Replit Secrets, not Git or chat:
 
 | Variable | Value |
 | --- | --- |
 | `VITE_DATA_MODE` | `live` |
+| `DATABASE_URL` | Supplied automatically by Replit Database; later use the AWS RDS connection string |
 | `VITE_SUPABASE_URL` | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | Public anon key (safe to include in frontend) |
 | `SUPABASE_URL` | Same Supabase project URL |
@@ -47,7 +62,7 @@ Verify your sending domain in Resend. Claims and invitations fail visibly if ema
 
 Build with `npm run build`, start with `npm run start`. The server listens on `PORT` or 5173 and binds to `0.0.0.0`.
 
-## 3. Schedule outreach
+## 4. Schedule outreach
 
 The notification worker must run every five minutes. Choose **one** option:
 
@@ -61,7 +76,7 @@ The same worker sends receipts for staff-recorded donations and completion notic
 
 Email failures are retried at bounded intervals up to five attempts. Inspect the admin outreach failure count and `notifications.last_error` if delivery stalls. Provider errors are deliberately summarized to avoid leaking sensitive information.
 
-## 4. First real workflow
+## 5. First real workflow
 
 1. Sign in as the invited caseworker; confirm an unapproved account cannot access the workspace.
 2. Invite one consenting volunteer using their real email address.

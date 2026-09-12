@@ -119,7 +119,7 @@ export default async function handler(req: Request, res: Response) {
             .in("id", ids),
         );
         const promotional = ["match", "digest"].includes(notification.kind);
-        const needs = (candidates || []).filter((n) =>
+        const needs = (candidates || []).filter((n: any) =>
           promotional
             ? n.status === "open" &&
               n.approved_at &&

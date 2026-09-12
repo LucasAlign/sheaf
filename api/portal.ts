@@ -87,17 +87,22 @@ export default async function handler(req: Request, res: Response) {
               .gt("quantity", 0),
           )
         : [];
-      const mine = (claims || []).map((x) => x.need_id);
+      const mine = (claims || []).map((x: any) => x.need_id);
       let q = db
         .from("needs")
         .select(safeNeedFields)
         .eq("organization_id", c.org)
         .order("created_at", { ascending: false });
-      if (!me.staff)
-        q = q.or(
-          `and(status.eq.open,approved_at.not.is.null,needed_by.gt.${new Date().toISOString()})${mine.length ? `,id.in.(${mine.join(",")})` : ""}`,
-        );
-      const needs = await result(q.limit(1000));
+      const loadedNeeds = await result(q.limit(1000));
+      const needs = me.staff
+        ? loadedNeeds
+        : (loadedNeeds || []).filter(
+            (need: any) =>
+              (need.status === "open" &&
+                need.approved_at &&
+                Date.parse(need.needed_by) > Date.now()) ||
+              mine.includes(need.id),
+          );
       const photos = await needPhotoUrls(db, needs || [], me.staff);
       const profile = me.volunteerId
         ? await result(
@@ -122,7 +127,7 @@ export default async function handler(req: Request, res: Response) {
         org,
         profile,
         admin: me.staff,
-        needs: (needs || []).map((n) => {
+        needs: (needs || []).map((n: any) => {
           const s = mapped.get(n.id) as
             | { score: number; reasons: string[]; distance: number | null }
             | undefined;
@@ -211,7 +216,7 @@ export default async function handler(req: Request, res: Response) {
       return res.status(200).json({
         matches: top.map((s: { volunteer_id: string }) => ({
           ...s,
-          ...contacts?.find((v) => v.id === s.volunteer_id),
+          ...contacts?.find((v: any) => v.id === s.volunteer_id),
         })),
       });
     }
