@@ -1,39 +1,16 @@
 {
-  "name": "bridge",
+  "name": "bridge-workspace",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build && esbuild server/node.ts --bundle --platform=node --format=esm --packages=external --outfile=dist-server/index.mjs",
-    "start": "node --env-file-if-exists=.env dist-server/index.mjs",
-    "test": "vitest run",
-    "test:db": "node --env-file-if-exists=.env scripts/test-db.mjs",
-    "db:migrate": "node --env-file-if-exists=.env scripts/migrate-postgres.mjs",
-    "db:seed-demo": "node --env-file-if-exists=.env scripts/seed-demo-data.mjs",
-    "preview": "vite preview --host 127.0.0.1"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.57.0",
-    "@tailwindcss/vite": "^4.1.13",
-    "@fontsource-variable/figtree": "^5.2.8",
-    "@fontsource-variable/fraunces": "^5.2.8",
-    "lucide-react": "^0.468.0",
-    "pg": "^8.16.3",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "tailwindcss": "^4.1.13",
-    "zod": "^4.1.5"
+    "db:migrate": "node ./scripts/migrate-postgres.mjs",
+    "db:seed-demo": "node ./scripts/seed-demo-data.mjs",
+    "dev": "pnpm --filter @workspace/bridge run dev",
+    "typecheck": "pnpm --filter @workspace/api-server run typecheck && pnpm --filter @workspace/bridge run typecheck",
+    "build": "pnpm --filter @workspace/api-server run build && PORT=${PORT:-20043} BASE_PATH=${BASE_PATH:-/} pnpm --filter @workspace/bridge run build"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "@types/react": "^19.1.12",
-    "@types/react-dom": "^19.1.9",
-    "@vitejs/plugin-react": "^5.0.2",
-    "esbuild": "^0.27.0",
-    "@types/pg": "^8.15.5",
-    "typescript": "~5.9.2",
-    "vite": "^7.1.4",
-    "vitest": "^4.1.11"
+    "typescript": "^5.9.2"
   }
 }
