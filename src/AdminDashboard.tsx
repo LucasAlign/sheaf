@@ -348,7 +348,7 @@ export default function AdminDashboard({
                 </div>
                 <div className="panel-footer">
                   <ShieldCheck size={14} />
-                  <span>Only approved staff can post needs.</span>
+                  <span>Only authorized staff can post needs.</span>
                   <span>{needs.length} total needs</span>
                 </div>
               </section>
@@ -464,7 +464,7 @@ export default function AdminDashboard({
               <div className="eyebrow">TRUSTED STAFF WORKSPACE</div>
               <h2>A direct path from need to help.</h2>
               <p>
-                Approved caseworkers, county coordinators, and assistants can
+                Authorized caseworkers, county coordinators, and assistants can
                 post needs directly to the volunteer feed.
               </p>
               <button className="button secondary full" onClick={post}>
@@ -473,7 +473,7 @@ export default function AdminDashboard({
               </button>
               <span className="review-footnote">
                 <ShieldCheck size={13} />
-                Access is limited to approved staff
+                Access is limited to authorized staff
               </span>
             </section>
             <section className="volunteer-card">

@@ -39,14 +39,13 @@ export async function validatePhoto(
       "Choose a JPEG, PNG, or WebP photo smaller than 5 MB.",
     );
 }
-export async function needPhotoUrls(
-  db: DB,
-  needs: { photo_path?: string | null; photo_approved_at?: string | null }[],
-  staff: boolean,
-) {
-  const paths = needs
-    .filter((n) => n.photo_path && (staff || n.photo_approved_at))
+export function publishedPhotoPaths(needs: { photo_path?: string | null }[]) {
+  return needs
+    .filter((n) => n.photo_path)
     .map((n) => n.photo_path!);
+}
+export async function needPhotoUrls(needs: { photo_path?: string | null }[]) {
+  const paths = publishedPhotoPaths(needs);
   if (!paths.length) return new Map<string, string>();
   const data = await signedPhotoUrls([...new Set(paths)]);
   return new Map(

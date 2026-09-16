@@ -23,15 +23,17 @@ Create a dedicated Supabase project for staff Auth and private photo Storage. Ne
 3. `supabase/migrations/202609100003_reminders.sql`
 4. `supabase/migrations/202609100004_fulfillment_reports.sql`
 5. `supabase/migrations/202609100005_photos.sql`
-6. `supabase/seed.sql`, after replacing the placeholder caseworker contact email.
+6. `supabase/migrations/202609160001_direct_staff_posting.sql`
+7. `supabase/migrations/202609160002_trusted_staff_content.sql`
+8. `supabase/seed.sql`, after replacing the placeholder caseworker contact email.
 
-For an existing installation with migrations 001–003 applied, apply only 004 and 005; do not rerun the initial schema or seed. Migration 005 creates the private `need-photos` Storage bucket (5 MB, JPEG/PNG/WebP).
+For an existing installation, apply every later migration that is not already recorded; do not rerun the initial schema or seed. Migration 005 creates the private `need-photos` Storage bucket (5 MB, JPEG/PNG/WebP), and migrations 006–007 remove the old need and photo review gates.
 
 The migration enables PostGIS in `extensions`. Use a dedicated database/project; the initial grants deliberately close direct client writes to Bridge tables. If an existing project has PostGIS in another schema, adapt the extension schema explicitly before migration.
 
 The seed creates Keystone Family Alliance only, with no real family data and no invented needs. Organization ID: `c3206037-3638-4263-b18d-813a5895f1c8`.
 
-Invite the first staff user through Supabase Auth. For a Replit-backed installation, add that Auth UUID to both `auth.users` and `organization_members` in the Replit database; the commented membership example in the seed shows the organization and role values. Existing Supabase-backed installations add it in Supabase as before. No signup form can grant staff access. Supported roles are `admin`, `caseworker`, `county_coordinator`, and `assistant`. Approved staff publish needs directly, while `created_by`, `approved_by`, and `approved_at` retain the posting identity and publication time for auditing.
+Invite the first staff user through Supabase Auth. For a Replit-backed installation, add that Auth UUID to both `auth.users` and `organization_members` in the Replit database; the commented membership example in the seed shows the organization and role values. Existing Supabase-backed installations add it in Supabase as before. No signup form can grant staff access. Supported roles are `admin`, `caseworker`, `county_coordinator`, and `assistant`. Authorized staff publish needs and photos directly. The legacy `approved_by`, `approved_at`, and `photo_approved_at` fields are populated automatically as publication audit timestamps; they are not review gates.
 
 Configure Supabase Auth’s site URL and allowed redirects to your exact deployment origin. Configure production SMTP (Resend SMTP may be used) for staff magic links. Volunteer links use Bridge’s Resend integration independently of Supabase Auth. There is no requirement to enable anonymous Supabase Auth users.
 
@@ -78,14 +80,14 @@ Email failures are retried at bounded intervals up to five attempts. Inspect the
 
 ## 5. First real workflow
 
-1. Sign in as an invited staff member; confirm an unapproved account cannot access the workspace.
+1. Sign in as an invited staff member; confirm an unauthorized account cannot access the workspace.
 2. Invite one consenting volunteer using their real email address.
 3. Have them confirm their email, save capabilities/location/availability, and opt into individual matches or a digest. New profiles default to no match emails until the volunteer chooses.
 4. Post a nonsensitive test need with a public meeting-point location and confirm it appears immediately in the open feed. Never post family names, addresses, case notes, or identifying details.
 5. Run the scheduled job once, verify the branded email, follow its secure link, and confirm the claim. The portal must show the need as claimed and the caseworker must see the volunteer contact.
 6. Have the volunteer report delivery, then confirm the actual received quantity as staff. Test a three-dresser need with two received: release any unprovided commitment and verify one remains available. Completing the last unit must queue an email to the posting social worker.
 7. For an actual eligible gift, confirm donation details and record the receipt; verify the giver receives the email and text attachment. Check Reports → Giving report and export the CSV. Test a completed-year donor statement with approved test records.
-8. Attach a nonsensitive specific photo, approve it, and check that volunteers receive only the approved image.
+8. Attach a nonsensitive specific photo and check that it is immediately available to volunteers without another approval step.
 9. Verify unsubscribe preferences, link expiration, and the organization contact email before introducing real family needs.
 
 No actual email delivery, external authentication, or hosted deployment has been performed just by importing the source.

@@ -318,25 +318,10 @@ export async function extendedAction(
         .update({
           photo_path: p.path,
           photo_alt: p.alt,
-          photo_approved_at: null,
+          photo_approved_at: p.path ? new Date().toISOString() : null,
         })
         .eq("organization_id", org)
         .eq("id", p.need_id)
-        .select("id")
-        .single(),
-    );
-    return ok();
-  }
-  if (action === "approve-photo") {
-    staff();
-    const p = receiptSchema.parse(body);
-    await one(
-      db
-        .from("needs")
-        .update({ photo_approved_at: new Date().toISOString() })
-        .eq("organization_id", org)
-        .eq("id", p.need_id)
-        .not("photo_path", "is", null)
         .select("id")
         .single(),
     );

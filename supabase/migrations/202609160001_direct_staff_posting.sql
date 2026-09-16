@@ -1,4 +1,4 @@
--- Approved organization staff publish needs directly. There is no second
+-- Authorized organization staff publish needs directly. There is no second
 -- approval queue; the posting user's identity remains recorded for auditing.
 
 alter table public.organization_members

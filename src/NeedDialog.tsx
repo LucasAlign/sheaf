@@ -60,7 +60,7 @@ export default function NeedDialog({
   }
   return (
     <Modal title={need.title} close={close}>
-      {need.photo_url && (admin || need.photo_approved_at) && (
+      {need.photo_url && (
         <img
           className="need-detail-photo"
           src={need.photo_url}
@@ -258,32 +258,15 @@ export default function NeedDialog({
                     photo_url: photo.url,
                     photo_path: photo.path,
                     photo_alt: photo.alt,
-                    photo_approved_at: null,
+                    photo_approved_at: photo.path
+                      ? new Date().toISOString()
+                      : null,
                   });
               })
             }
           >
-            Save photo for review
+            Save and publish photo
           </button>
-          {need.photo_url && !need.photo_approved_at && (
-            <button
-              className="button primary full"
-              disabled={working || photoBusy}
-              onClick={() =>
-                edit(async () => {
-                  if (live) await api("approve-photo", { need_id: need.id });
-                  else
-                    updateNeed({
-                      ...need,
-                      photo_approved_at: new Date().toISOString(),
-                    });
-                })
-              }
-            >
-              <ShieldCheck size={16} />
-              Approve photo for volunteers
-            </button>
-          )}
         </details>
       )}
     </Modal>

@@ -51,7 +51,7 @@ Requested, committed, and confirmed received quantities are separate. Volunteers
 
 Contributions are separate records of confirmed gifts, with retry keys and quantity limits preventing duplicate receipts. The organization EIN is required. Reports filter confirmed donations by Eastern calendar date, county, and donor; fulfillment reports filter needs by creation date. Year-end statements snapshot recorded gifts per donor and calendar year. The worker processes the previous year from January 1 and sends revisions for late records, deduplicated by snapshot content. Goods are described without an assigned dollar value; donated time is not receipted.
 
-Specific photos use signed uploads to a private Supabase Storage bucket. Upload ownership, byte signature, and size are checked before attachment. The browser re-encodes uploads to remove metadata. Photos require approval before volunteer access, using 15-minute signed read URLs. Previously issued URLs may remain usable until they expire after a photo is replaced. Hosted Storage behavior still needs launch verification.
+Specific photos use signed uploads to a private Supabase Storage bucket. Upload ownership, byte signature, and size are checked before attachment. The browser re-encodes uploads to remove metadata. Photos submitted by authorized staff publish immediately and use 15-minute signed read URLs; there is no separate photo-review step. Previously issued URLs may remain usable until they expire after a photo is replaced. Hosted Storage behavior still needs launch verification.
 
 ## Operational limits
 
@@ -62,6 +62,6 @@ Specific photos use signed uploads to a private Supabase Storage bucket. Upload 
 - An email already accepted by the provider cannot be recalled if a need is claimed milliseconds later. Landing confirmation checks availability atomically and explains that the need has been claimed.
 - Replit needs the portable Node server and an external schedule or always-on VM. Vercel needs a plan supporting five-minute schedules. Supabase Auth SMTP and Resend domain setup are external prerequisites.
 - No payments are collected. Contribution acknowledgments represent staff-recorded receipts, not pledges or donated time. The organization must configure its EIN and determine whether a gift may be acknowledged.
-- Only explicitly approved organization members can enter the staff workspace. Caseworkers, county coordinators, assistants, and admins publish needs directly; posting identity and publication time remain recorded for audit purposes.
+- Only explicitly authorized organization members can enter the staff workspace. Caseworkers, county coordinators, assistants, and admins publish needs, posts, and photos directly; posting identity and publication time remain recorded for audit purposes. The only manual case-worker verification in the need lifecycle is confirmation of actual receipt before completion.
 - No SMS or multi-organization administration is included. Another nonprofit uses a separate deployment and replaces the seed/service-area configuration.
 - An optional, feature-detected WebMCP tool can open an accessible need’s details; it cannot claim or send mail. Its registration and input contract are unit-tested, but support in a real WebMCP browser has not been verified. Browser interaction/visual QA was not run.

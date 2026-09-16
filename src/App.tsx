@@ -230,7 +230,7 @@ export default function App() {
       ),
     [needs],
   );
-  const open = needs.filter((n) => n.status === "open" && n.approved_at);
+  const open = needs.filter((n) => n.status === "open");
   const matches = (
     live
       ? [...open]
@@ -583,7 +583,7 @@ export default function App() {
                         <div className="match-bottom">
                           <span>
                             <Check size={13} />
-                            {n.reasons?.[0] || "Posted by approved staff"}
+                            {n.reasons?.[0] || "Posted by trusted staff"}
                           </span>
                           <ArrowRight size={18} />
                         </div>
@@ -594,7 +594,7 @@ export default function App() {
                   <div className="match-empty">
                     {loading
                       ? "Finding needs in your community…"
-                      : "New needs from approved staff will appear here. Set your profile to help us find a good fit."}
+                      : "New needs from trusted staff will appear here. Set your profile to help us find a good fit."}
                   </div>
                 )}
               </section>
@@ -611,12 +611,12 @@ export default function App() {
                   <p>
                     {view === "mine"
                       ? "Your caseworker coordinates the details privately."
-                      : "Every need comes from approved staff. Every act of care matters."}
+                      : "Every need comes from trusted staff. Every act of care matters."}
                   </p>
                 </div>
                 <div className="verified-note">
                   <ShieldCheck size={17} />
-                  <span>Posted by approved staff</span>
+                  <span>Posted by trusted staff</span>
                 </div>
               </div>
               <div className="category-tabs" aria-label="Filter by category">
@@ -736,7 +736,7 @@ export default function App() {
                             : urgencyLabels[n.urgency]}
                         </span>
                       </div>
-                      {n.photo_url && n.photo_approved_at && (
+                      {n.photo_url && (
                         <img
                           className="need-card-photo"
                           src={n.photo_url}
@@ -793,7 +793,7 @@ export default function App() {
                       </div>
                       <div className="card-footer">
                         <span>
-                          <ShieldCheck size={15} /> Verified need
+                          <ShieldCheck size={15} /> Posted by trusted staff
                         </span>
                         <button
                           className={`button ${n.claimed_by_me ? "secondary" : "primary"}`}
@@ -909,7 +909,7 @@ export default function App() {
             {[
               [
                 "Find your fit",
-                "Browse needs posted by approved staff, or add a profile for more personal matches.",
+                "Browse needs posted by trusted staff, or add a profile for more personal matches.",
               ],
               [
                 "Say “I can help”",
@@ -1022,7 +1022,7 @@ export default function App() {
       {modal === "login" && (
         <Modal title="Staff sign in" close={() => setModal(null)}>
           <p>
-            Use the email your organization approved for staff access.
+            Use the email your organization authorized for staff access.
           </p>
           <form
             onSubmit={(e) => {
@@ -1405,7 +1405,7 @@ function PostForm({
     <Modal title="A new way to show up." close={close}>
       <p>
         Describe the need without names, addresses, or identifying family
-        details. Approved staff posts are published as soon as they are
+        details. Authorized staff posts are published as soon as they are
         submitted.
       </p>
       <form

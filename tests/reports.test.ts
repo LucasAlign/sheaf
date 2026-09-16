@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { csvCell, csvFile } from "../src/reportExport";
 import { buildAnnualStatement } from "../server/reports";
-import { validPhotoBytes } from "../server/photos";
+import { publishedPhotoPaths, validPhotoBytes } from "../server/photos";
 import { needCounts } from "../src/NeedProgress";
 import { demoNeeds } from "../src/demo";
 import { claimSchema, confirmSchema, needSchema } from "../server/validation";
@@ -102,6 +102,14 @@ describe("donor reports", () => {
   });
 });
 describe("photo boundary", () => {
+  it("publishes every staff-attached photo without a review flag", () => {
+    expect(
+      publishedPhotoPaths([
+        { photo_path: "org/staff/photo.jpg" },
+        { photo_path: null },
+      ]),
+    ).toEqual(["org/staff/photo.jpg"]);
+  });
   it("rejects SVG and HTML masquerading as an image", () => {
     expect(
       validPhotoBytes(new TextEncoder().encode('<svg onload="alert(1)">')),

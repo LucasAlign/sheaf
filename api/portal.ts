@@ -49,7 +49,7 @@ export default async function handler(req: Request, res: Response) {
     const me = await identity(req, db, c.org);
     const staff = () => {
       if (!me.staff || !me.userId)
-        throw new HttpError(403, "Approved staff access is required.");
+        throw new HttpError(403, "Authorized staff access is required.");
       return me.userId;
     };
     const volunteer = () => {
@@ -99,11 +99,10 @@ export default async function handler(req: Request, res: Response) {
         : (loadedNeeds || []).filter(
             (need: any) =>
               (need.status === "open" &&
-                need.approved_at &&
                 Date.parse(need.needed_by) > Date.now()) ||
               mine.includes(need.id),
           );
-      const photos = await needPhotoUrls(db, needs || [], me.staff);
+      const photos = await needPhotoUrls(needs || []);
       const profile = me.volunteerId
         ? await result(
             db.rpc("get_volunteer_profile", {
@@ -234,7 +233,7 @@ export default async function handler(req: Request, res: Response) {
           db
             .from("needs")
             .select(
-              "ways_to_help,status,approved_at,needed_by,quantity_required,quantity_committed",
+              "ways_to_help,status,needed_by,quantity_required,quantity_committed",
             )
             .eq("organization_id", c.org)
             .eq("id", p.need_id)
@@ -243,7 +242,6 @@ export default async function handler(req: Request, res: Response) {
         if (
           !n ||
           n.status !== "open" ||
-          !n.approved_at ||
           Date.parse(n.needed_by) < Date.now() ||
           !n.ways_to_help.includes(p.way) ||
           p.quantity > n.quantity_required - n.quantity_committed
@@ -361,6 +359,7 @@ export default async function handler(req: Request, res: Response) {
           created_by: user,
           approved_by: user,
           approved_at: new Date().toISOString(),
+          photo_approved_at: p.photo_path ? new Date().toISOString() : null,
           status: "open",
           next_wave_at: new Date().toISOString(),
           geolocation:
