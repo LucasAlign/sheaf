@@ -49,7 +49,6 @@ import {
   type Need,
   type Organization,
   type Profile,
-  type Status,
 } from "./types";
 import { rankDemo } from "./matching";
 import { counties } from "./counties";
@@ -232,7 +231,7 @@ export default function App() {
       ),
     [needs],
   );
-  const open = needs.filter((n) => n.status === "open" && n.approved_at);
+  const open = needs.filter((n) => n.status === "open");
   const matches = (
     live
       ? [...open]
@@ -314,38 +313,6 @@ export default function App() {
         live
           ? "You’re on it! Your caseworker will coordinate the next steps."
           : "Sample need claimed. Find it in My help.",
-      );
-    });
-  }
-  async function transition(need: Need, status: Status) {
-    await act(async () => {
-      if (live) {
-        await api("transition", { need_id: need.id, status });
-        await refresh();
-      } else
-        setNeeds((ns) =>
-          ns.map((n) =>
-            n.id === need.id
-              ? {
-                  ...n,
-                  status,
-                  photo_approved_at:
-                    status === "open" && n.photo_url
-                      ? new Date().toISOString()
-                      : n.photo_approved_at,
-                  approved_at:
-                    status === "open"
-                      ? new Date().toISOString()
-                      : n.approved_at,
-                }
-              : n,
-          ),
-        );
-      setSelected(null);
-      setToast(
-        status === "open"
-          ? "Verified and published to the feed."
-          : "Need marked completed. Thank you for closing the loop.",
       );
     });
   }
@@ -529,7 +496,6 @@ export default function App() {
                 post={() => setModal("post")}
                 invite={() => setModal("invite")}
                 select={setSelected}
-                transition={transition}
                 remind={(n) =>
                   act(async () => {
                     if (live) await api("remind", { need_id: n.id });
@@ -771,7 +737,7 @@ export default function App() {
                             : urgencyLabels[n.urgency]}
                         </span>
                       </div>
-                      {n.photo_url && n.photo_approved_at && (
+                      {n.photo_url && (
                         <img
                           className="need-card-photo"
                           src={n.photo_url}
@@ -1104,13 +1070,13 @@ export default function App() {
                     ...data,
                     id: crypto.randomUUID(),
                     created_at: new Date().toISOString(),
-                    approved_at: null,
-                    status: "pending",
+                    approved_at: new Date().toISOString(),
+                    status: "open",
                   },
                   ...ns,
                 ]);
               setModal(null);
-              setToast("Need submitted for approval. It is not public yet.");
+              setToast("Need posted and available to volunteers.");
             })
           }
         />
@@ -1123,7 +1089,6 @@ export default function App() {
           busy={busy}
           admin={view === "admin"}
           close={() => setSelected(null)}
-          changeStatus={(status) => transition(selected, status)}
           claim={claim}
           onChange={recordsChanged}
           updateNeed={(updated) =>
@@ -1191,7 +1156,7 @@ function ProfileForm({
   close: () => void;
   save: (p: Profile) => void;
 }) {
-  const [tags, setTags] = useState(profile.capacility_tags);
+  const [tags, setTags] = useState(profile.capability_tags);
   const [geo, setGeo] = useState<{
     latitude: number | null;
     longitude: number | null;
@@ -1441,7 +1406,8 @@ function PostForm({
     <Modal title="A new way to show up." close={close}>
       <p>
         Describe the need without names, addresses, or identifying family
-        details. Every post is reviewed before going live.
+        details. Authorized staff posts are published as soon as they are
+        submitted.
       </p>
       <form
         onSubmit={(e) => {
@@ -1589,7 +1555,7 @@ function PostForm({
           </p>
         )}
         <button disabled={busy || photoBusy} className="button primary full">
-          {busy ? "Submitting…" : "Submit for verification"}
+          {busy ? "Posting…" : "Post need"}
           <ShieldCheck size={17} />
         </button>
       </form>

@@ -49,7 +49,7 @@ export default async function handler(req: Request, res: Response) {
     const me = await identity(req, db, c.org);
     const staff = () => {
       if (!me.staff || !me.userId)
-        throw new HttpError(403, "Caseworker access is required.");
+        throw new HttpError(403, "Authorized staff access is required.");
       return me.userId;
     };
     const volunteer = () => {
@@ -97,13 +97,12 @@ export default async function handler(req: Request, res: Response) {
       const needs = me.staff
         ? loadedNeeds
         : (loadedNeeds || []).filter(
-            (need: any) =>
-              (need.status === "open" &&
-                need.approved_at &&
-                Date.parse(need.needed_by) > Date.now()) ||
+              (need: any) =>
+                (need.status === "open" &&
+                  Date.parse(need.needed_by) > Date.now()) ||
               mine.includes(need.id),
           );
-      const photos = await needPhotoUrls(db, needs || [], me.staff);
+      const photos = await needPhotoUrls(needs || []);
       const profile = me.volunteerId
         ? await result(
             db.rpc("get_volunteer_profile", {
@@ -234,7 +233,7 @@ export default async function handler(req: Request, res: Response) {
           db
             .from("needs")
             .select(
-              "ways_to_help,status,approved_at,needed_by,quantity_required,quantity_committed",
+              "ways_to_help,status,needed_by,quantity_required,quantity_committed",
             )
             .eq("organization_id", c.org)
             .eq("id", p.need_id)
@@ -243,7 +242,6 @@ export default async function handler(req: Request, res: Response) {
         if (
           !n ||
           n.status !== "open" ||
-          !n.approved_at ||
           Date.parse(n.needed_by) < Date.now() ||
           !n.ways_to_help.includes(p.way) ||
           p.quantity > n.quantity_required - n.quantity_committed
@@ -359,7 +357,11 @@ export default async function handler(req: Request, res: Response) {
           ...p,
           organization_id: c.org,
           created_by: user,
-          status: "pending",
+          approved_by: user,
+          approved_at: new Date().toISOString(),
+          photo_approved_at: p.photo_path ? new Date().toISOString() : null,
+          status: "open",
+          next_wave_at: new Date().toISOString(),
           geolocation:
             latitude !== undefined
               ? `SRID=4326;POINT(${longitude} ${latitude})`
@@ -367,22 +369,6 @@ export default async function handler(req: Request, res: Response) {
         }),
       );
       return res.status(201).json({ ok: true });
-    }
-    if (action === "transition") {
-      const user = staff();
-      const p = z
-        .object({ need_id: uuid, status: z.enum(["open", "completed"]) })
-        .strict()
-        .parse(req.body);
-      await result(
-        db.rpc("transition_need", {
-          p_org: c.org,
-          p_need: p.need_id,
-          p_user: user,
-          p_status: p.status,
-        }),
-      );
-      return res.status(200).json({ ok: true });
     }
     if (action === "remind") {
       staff();

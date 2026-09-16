@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MapPin, UserRound, ShieldCheck, Heart } from "lucide-react";
-import type { Need, Profile, Status } from "./types";
+import type { Need, Profile } from "./types";
 import Modal from "./Modal";
 import AdminNeedDetails from "./AdminNeedDetails";
 import NeedProgress, { needCounts } from "./NeedProgress";
@@ -14,7 +14,6 @@ export default function NeedDialog({
   busy,
   admin,
   close,
-  changeStatus,
   claim,
   onChange,
   updateNeed,
@@ -25,7 +24,6 @@ export default function NeedDialog({
   busy: boolean;
   admin: boolean;
   close: () => void;
-  changeStatus: (s: Status) => void;
   claim: (
     n: Need,
     w: string,
@@ -62,7 +60,7 @@ export default function NeedDialog({
   }
   return (
     <Modal title={need.title} close={close}>
-      {need.photo_url && (admin || need.photo_approved_at) && (
+      {need.photo_url && (
         <img
           className="need-detail-photo"
           src={need.photo_url}
@@ -114,16 +112,6 @@ export default function NeedDialog({
         Needed by {new Date(need.needed_by).toLocaleDateString()}
       </p>
       {admin && need.status === "open" && <AdminNeedDetails need={need} />}
-      {admin && need.status === "pending" && (
-        <button
-          className="button primary full"
-          disabled={busy}
-          onClick={() => changeStatus("open")}
-        >
-          <ShieldCheck size={16} />
-          Verify & publish
-        </button>
-      )}
       {(admin || need.claimed_by_me) && (
         <FulfillmentPanel need={need} admin={admin} onChange={onChange} />
       )}
@@ -270,32 +258,15 @@ export default function NeedDialog({
                     photo_url: photo.url,
                     photo_path: photo.path,
                     photo_alt: photo.alt,
-                    photo_approved_at: null,
+                    photo_approved_at: photo.path
+                      ? new Date().toISOString()
+                      : null,
                   });
               })
             }
           >
-            Save photo for review
+            Save and publish photo
           </button>
-          {need.photo_url && !need.photo_approved_at && (
-            <button
-              className="button primary full"
-              disabled={working || photoBusy}
-              onClick={() =>
-                edit(async () => {
-                  if (live) await api("approve-photo", { need_id: need.id });
-                  else
-                    updateNeed({
-                      ...need,
-                      photo_approved_at: new Date().toISOString(),
-                    });
-                })
-              }
-            >
-              <ShieldCheck size={16} />
-              Approve photo for volunteers
-            </button>
-          )}
         </details>
       )}
     </Modal>

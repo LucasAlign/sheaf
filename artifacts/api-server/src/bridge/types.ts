@@ -7,7 +7,7 @@ export const categories = [
 ] as const;
 export type Category = (typeof categories)[number];
 export type Urgency = "critical" | "soon" | "flexible";
-export type Status = "pending" | "open" | "claimed" | "completed";
+export type Status = "open" | "claimed" | "completed";
 export type Need = {
   id: string;
   title: string;

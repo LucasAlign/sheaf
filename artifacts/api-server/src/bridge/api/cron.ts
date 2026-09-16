@@ -125,7 +125,7 @@ export default async function handler(req: Request, res: Response) {
           db
             .from("needs")
             .select(
-              "id,title,status,approved_at,needed_by,ways_to_help,public_location,poster_name,quantity_required,quantity_committed,unit_label",
+              "id,title,status,needed_by,ways_to_help,public_location,poster_name,quantity_required,quantity_committed,unit_label",
             )
             .eq("organization_id", c.org)
             .in("id", ids),
@@ -134,7 +134,6 @@ export default async function handler(req: Request, res: Response) {
         const needs = (candidates || []).filter((n: any) =>
           promotional
             ? n.status === "open" &&
-              n.approved_at &&
               Date.parse(n.needed_by) > Date.now()
             : notification.kind === "reminder"
               ? ["open", "claimed"].includes(n.status)

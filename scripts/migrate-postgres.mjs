@@ -34,6 +34,25 @@ try {
     (await client.query("select version from public.bridge_migrations")).rows.map((row) => row.version),
   );
   const files = (await readdir(migrationDirectory)).filter((file) => file.endsWith(".sql")).sort();
+
+  // Replit's development database was provisioned before the migration ledger
+  // existed. Adopt that known legacy table instead of trying to recreate it,
+  // then continue normally with every later migration.
+  const capturedEmailsMigration = "202609120006_captured_emails.sql";
+  if (!applied.has(capturedEmailsMigration)) {
+    const { rows } = await client.query(
+      "select to_regclass('public.captured_emails') as relation",
+    );
+    if (rows[0]?.relation) {
+      await client.query(
+        "insert into public.bridge_migrations(version) values($1) on conflict do nothing",
+        [capturedEmailsMigration],
+      );
+      applied.add(capturedEmailsMigration);
+      console.log(`Adopted existing ${capturedEmailsMigration}`);
+    }
+  }
+
   for (const file of files) {
     if (applied.has(file)) continue;
     const sql = await readFile(resolve(migrationDirectory, file), "utf8");
