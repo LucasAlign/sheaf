@@ -1191,7 +1191,7 @@ function ProfileForm({
   close: () => void;
   save: (p: Profile) => void;
 }) {
-  const [tags, setTags] = useState(profile.capability_tags);
+  const [tags, setTags] = useState(profile.capacility_tags);
   const [geo, setGeo] = useState<{
     latitude: number | null;
     longitude: number | null;
@@ -1414,6 +1414,13 @@ function localDate(s: string) {
     .toISOString()
     .slice(0, 16);
 }
+const defaultWayToHelp: Record<Category, string> = {
+  goods: "Provide the requested items",
+  transportation: "Provide transportation",
+  meals: "Provide a meal",
+  "helping hands": "Help with this need",
+  funds: "Contribute funds",
+};
 function PostForm({
   busy,
   close,
@@ -1441,22 +1448,6 @@ function PostForm({
           e.preventDefault();
           const f = new FormData(e.currentTarget);
           const cat = String(f.get("category")) as Category;
-          const start = String(f.get("start") || "");
-          const end = String(f.get("end") || "");
-          if (
-            (start && !end) ||
-            (!start && end) ||
-            (start && end && start >= end)
-          ) {
-            setProblem("Choose a valid start and end for the service window.");
-            return;
-          }
-          const lat = String(f.get("latitude") || "");
-          const lon = String(f.get("longitude") || "");
-          if (!!lat !== !!lon) {
-            setProblem("Provide both coordinates, or leave both empty.");
-            return;
-          }
           if (photo.url && !photo.alt) {
             setProblem("Describe the photo before submitting.");
             return;
@@ -1474,19 +1465,13 @@ function PostForm({
             description: String(f.get("description")),
             urgency: String(f.get("urgency")) as Need["urgency"],
             service_area: String(f.get("county")),
-            ways_to_help: String(f.get("ways"))
-              .split("\n")
-              .map((w) => w.trim())
-              .filter(Boolean),
+            ways_to_help: [defaultWayToHelp[cat]],
             capability_tags: [cat],
             needed_by: new Date(
               String(f.get("needed_by")) + "T23:59:00",
             ).toISOString(),
-            window_start: start ? new Date(start).toISOString() : null,
-            window_end: end ? new Date(end).toISOString() : null,
-            ...(lat && lon
-              ? { latitude: Number(lat), longitude: Number(lon) }
-              : {}),
+            window_start: null,
+            window_end: null,
           });
         }}
       >
@@ -1551,16 +1536,6 @@ function PostForm({
             />
           </label>
         </div>
-        <label>
-          Ways to help <span className="subtle">(one per line)</span>
-          <textarea
-            name="ways"
-            rows={2}
-            maxLength={800}
-            placeholder={"Cook a family meal\nSend a meal gift card"}
-            required
-          />
-        </label>
         <div className="form-grid">
           <label>
             Quantity needed
@@ -1608,43 +1583,6 @@ function PostForm({
           onBusyChange={setPhotoBusy}
           disabled={busy || photoBusy}
         />
-        <details>
-          <summary>Time window & approximate location</summary>
-          <p className="subtle">
-            Use a public meeting point or town center for matching, never a
-            family’s address.
-          </p>
-          <div className="form-grid">
-            <label>
-              Window start
-              <input name="start" type="datetime-local" />
-            </label>
-            <label>
-              Window end
-              <input name="end" type="datetime-local" />
-            </label>
-            <label>
-              Latitude
-              <input
-                name="latitude"
-                type="number"
-                min="-90"
-                max="90"
-                step="0.0001"
-              />
-            </label>
-            <label>
-              Longitude
-              <input
-                name="longitude"
-                type="number"
-                min="-180"
-                max="180"
-                step="0.0001"
-              />
-            </label>
-          </div>
-        </details>
         {problem && (
           <p className="error" role="alert">
             {problem}
