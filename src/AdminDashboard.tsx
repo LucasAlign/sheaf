@@ -121,31 +121,22 @@ export default function AdminDashboard({
   const metrics = [
     {
       title: "Open needs",
-      count: open.length,
-      detail: "Ready for the right person",
+      count: pending.length + open.length,
+      detail: "Awaiting review or ready to be claimed",
       icon: Box,
       color: "pine",
     },
     {
-      title: "Awaiting approval",
-      count: pending.length,
-      detail: pending.length
-        ? "A little review, then a big difference"
-        : "Every published need is verified",
-      icon: ShieldCheck,
-      color: "clay",
-    },
-    {
-      title: "In good hands",
+      title: "Claimed",
       count: claimed.length,
-      detail: "Claimed by a caring volunteer",
+      detail: "A volunteer has committed to help",
       icon: Heart,
       color: "blue",
     },
     {
-      title: "Needs fulfilled",
+      title: "Completed",
       count: completed.length,
-      detail: "Small acts. Real follow-through.",
+      detail: "Needs fulfilled and confirmed",
       icon: Check,
       color: "olive",
     },

@@ -24,6 +24,8 @@ The default screen is the caseworker dashboard: Overview, Needs pipeline, Email 
 
 For live data, add Replit Database and run `npm run db:migrate`. Replit provides `DATABASE_URL` automatically. The same application data module and migrations can later target AWS RDS PostgreSQL by changing that variable.
 
+For a customer-facing staging walkthrough, run `npm run db:seed-demo` after migration. The repeatable seed adds fictional needs across approval, open, and claimed states, uses reserved `.invalid` volunteer addresses, sets their email preferences to off, and does not queue messages. Never run it against a production database.
+
 Changing `VITE_*` values requires rebuilding the frontend. Setting `VITE_DATA_MODE=live` makes configuration errors visible; live mode never silently substitutes sample data.
 
 ## What is implemented
