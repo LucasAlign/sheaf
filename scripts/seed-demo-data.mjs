@@ -39,7 +39,7 @@ const needs = [
     ways: ["Provide a new crib and mattress", "Coordinate store pickup"],
     tags: ["goods", "helping hands"],
     daysUntilNeeded: 3,
-    status: "pending",
+    status: "open",
     quantity: 1,
     unit: "crib set",
     location: "State College community center",
@@ -176,7 +176,7 @@ try {
   }
 
   for (const need of needs) {
-    const approvedAt = need.status === "pending" ? null : new Date();
+    const approvedAt = new Date();
     const committed = need.status === "claimed" ? need.quantity : 0;
 
     await client.query(
@@ -257,7 +257,7 @@ try {
 
   await client.query("commit");
   console.log(
-    "Customer demo seeded: 1 awaiting approval, 3 open, 2 claimed; no emails queued.",
+    "Customer demo seeded: 4 open, 2 claimed; no emails queued.",
   );
 } catch (error) {
   await client.query("rollback");

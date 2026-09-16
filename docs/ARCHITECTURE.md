@@ -24,7 +24,7 @@ Public service locations should be town centers or public meeting points. Approx
 
 ## Matching
 
-`score_matches` calculates on open, approved, unexpired needs:
+`score_matches` calculates on open, staff-posted, unexpired needs:
 
 | Component | Contribution |
 | --- | --- |
@@ -62,6 +62,6 @@ Specific photos use signed uploads to a private Supabase Storage bucket. Upload 
 - An email already accepted by the provider cannot be recalled if a need is claimed milliseconds later. Landing confirmation checks availability atomically and explains that the need has been claimed.
 - Replit needs the portable Node server and an external schedule or always-on VM. Vercel needs a plan supporting five-minute schedules. Supabase Auth SMTP and Resend domain setup are external prerequisites.
 - No payments are collected. Contribution acknowledgments represent staff-recorded receipts, not pledges or donated time. The organization must configure its EIN and determine whether a gift may be acknowledged.
-- Staff approval can be performed by the posting caseworker. Two-person review can be added if the organization requires it.
+- Only explicitly approved organization members can enter the staff workspace. Caseworkers, county coordinators, assistants, and admins publish needs directly; posting identity and publication time remain recorded for audit purposes.
 - No SMS or multi-organization administration is included. Another nonprofit uses a separate deployment and replaces the seed/service-area configuration.
-- An optional, feature-detected WebMCP tool can open an accessible need’s details; it cannot approve, claim, or send mail. Its registration and input contract are unit-tested, but support in a real WebMCP browser has not been verified. Browser interaction/visual QA was not run.
+- An optional, feature-detected WebMCP tool can open an accessible need’s details; it cannot claim or send mail. Its registration and input contract are unit-tested, but support in a real WebMCP browser has not been verified. Browser interaction/visual QA was not run.

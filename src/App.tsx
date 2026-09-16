@@ -49,7 +49,6 @@ import {
   type Need,
   type Organization,
   type Profile,
-  type Status,
 } from "./types";
 import { rankDemo } from "./matching";
 import { counties } from "./counties";
@@ -316,38 +315,6 @@ export default function App() {
       );
     });
   }
-  async function transition(need: Need, status: Status) {
-    await act(async () => {
-      if (live) {
-        await api("transition", { need_id: need.id, status });
-        await refresh();
-      } else
-        setNeeds((ns) =>
-          ns.map((n) =>
-            n.id === need.id
-              ? {
-                  ...n,
-                  status,
-                  photo_approved_at:
-                    status === "open" && n.photo_url
-                      ? new Date().toISOString()
-                      : n.photo_approved_at,
-                  approved_at:
-                    status === "open"
-                      ? new Date().toISOString()
-                      : n.approved_at,
-                }
-              : n,
-          ),
-        );
-      setSelected(null);
-      setToast(
-        status === "open"
-          ? "Verified and published to the feed."
-          : "Need marked completed. Thank you for closing the loop.",
-      );
-    });
-  }
   async function recordsChanged() {
     if (live) await refresh();
     else setNeeds((ns) => syncDemoNeeds(ns));
@@ -510,7 +477,7 @@ export default function App() {
                   className="button primary"
                   onClick={() => setModal("login")}
                 >
-                  Caseworker sign in <ArrowRight size={17} />
+                  Staff sign in <ArrowRight size={17} />
                 </button>
                 <button className="text-button" onClick={() => setView("feed")}>
                   Here to help? Browse the community feed{" "}
@@ -528,7 +495,6 @@ export default function App() {
                 post={() => setModal("post")}
                 invite={() => setModal("invite")}
                 select={setSelected}
-                transition={transition}
                 remind={(n) =>
                   act(async () => {
                     if (live) await api("remind", { need_id: n.id });
@@ -617,7 +583,7 @@ export default function App() {
                         <div className="match-bottom">
                           <span>
                             <Check size={13} />
-                            {n.reasons?.[0] || "Verified by a caseworker"}
+                            {n.reasons?.[0] || "Posted by approved staff"}
                           </span>
                           <ArrowRight size={18} />
                         </div>
@@ -628,7 +594,7 @@ export default function App() {
                   <div className="match-empty">
                     {loading
                       ? "Finding needs in your community…"
-                      : "New verified needs will appear here. Set your profile to help us find a good fit."}
+                      : "New needs from approved staff will appear here. Set your profile to help us find a good fit."}
                   </div>
                 )}
               </section>
@@ -645,12 +611,12 @@ export default function App() {
                   <p>
                     {view === "mine"
                       ? "Your caseworker coordinates the details privately."
-                      : "Every need is verified. Every act of care matters."}
+                      : "Every need comes from approved staff. Every act of care matters."}
                   </p>
                 </div>
                 <div className="verified-note">
                   <ShieldCheck size={17} />
-                  <span>Caseworker verified</span>
+                  <span>Posted by approved staff</span>
                 </div>
               </div>
               <div className="category-tabs" aria-label="Filter by category">
@@ -905,7 +871,7 @@ export default function App() {
           <button
             onClick={() => (view === "admin" ? setView("feed") : enterAdmin())}
           >
-            {view === "admin" ? "Community feed" : "Caseworker portal"}{" "}
+            {view === "admin" ? "Community feed" : "Staff portal"}{" "}
             <ArrowRight size={13} />
           </button>
           {admin && (
@@ -943,7 +909,7 @@ export default function App() {
             {[
               [
                 "Find your fit",
-                "Browse verified needs near you, or add a profile for more personal matches.",
+                "Browse needs posted by approved staff, or add a profile for more personal matches.",
               ],
               [
                 "Say “I can help”",
@@ -1054,9 +1020,9 @@ export default function App() {
         </Modal>
       )}
       {modal === "login" && (
-        <Modal title="Caseworker sign in" close={() => setModal(null)}>
+        <Modal title="Staff sign in" close={() => setModal(null)}>
           <p>
-            Use the email your organization has approved for caseworker access.
+            Use the email your organization approved for staff access.
           </p>
           <form
             onSubmit={(e) => {
@@ -1103,13 +1069,13 @@ export default function App() {
                     ...data,
                     id: crypto.randomUUID(),
                     created_at: new Date().toISOString(),
-                    approved_at: null,
-                    status: "pending",
+                    approved_at: new Date().toISOString(),
+                    status: "open",
                   },
                   ...ns,
                 ]);
               setModal(null);
-              setToast("Need submitted for approval. It is not public yet.");
+              setToast("Need posted and available to volunteers.");
             })
           }
         />
@@ -1122,7 +1088,6 @@ export default function App() {
           busy={busy}
           admin={view === "admin"}
           close={() => setSelected(null)}
-          changeStatus={(status) => transition(selected, status)}
           claim={claim}
           onChange={recordsChanged}
           updateNeed={(updated) =>
@@ -1440,7 +1405,8 @@ function PostForm({
     <Modal title="A new way to show up." close={close}>
       <p>
         Describe the need without names, addresses, or identifying family
-        details. Every post is reviewed before going live.
+        details. Approved staff posts are published as soon as they are
+        submitted.
       </p>
       <form
         onSubmit={(e) => {
@@ -1588,7 +1554,7 @@ function PostForm({
           </p>
         )}
         <button disabled={busy || photoBusy} className="button primary full">
-          {busy ? "Submitting…" : "Submit for verification"}
+          {busy ? "Posting…" : "Post need"}
           <ShieldCheck size={17} />
         </button>
       </form>

@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL. Demo mode is the default and is prominently labeled. Sample claims, posts, approvals, profiles, and completion state are saved only on the current device. **No emails are sent and no tax acknowledgments are issued in demo mode.** Reset demo clears sample changes.
+Open the printed local URL. Demo mode is the default and is prominently labeled. Sample claims, posts, profiles, and completion state are saved only on the current device. **No emails are sent and no tax acknowledgments are issued in demo mode.** Reset demo clears sample changes.
 
 The default screen is the caseworker dashboard: Overview, Needs pipeline, Email outreach, and Reports. The footer opens the volunteer community feed. Live mode requires staff sign-in before the admin workspace becomes accessible.
 
@@ -24,14 +24,15 @@ The default screen is the caseworker dashboard: Overview, Needs pipeline, Email 
 
 For live data, add Replit Database and run `npm run db:migrate`. Replit provides `DATABASE_URL` automatically. The same application data module and migrations can later target AWS RDS PostgreSQL by changing that variable.
 
-For a customer-facing staging walkthrough, run `npm run db:seed-demo` after migration. The repeatable seed adds fictional needs across approval, open, and claimed states, uses reserved `.invalid` volunteer addresses, sets their email preferences to off, and does not queue messages. Never run it against a production database.
+For a customer-facing staging walkthrough, run `npm run db:seed-demo` after migration. The repeatable seed adds fictional needs across open and claimed states, uses reserved `.invalid` volunteer addresses, sets their email preferences to off, and does not queue messages. Never run it against a production database.
 
 Changing `VITE_*` values requires rebuilding the frontend. Setting `VITE_DATA_MODE=live` makes configuration errors visible; live mode never silently substitutes sample data.
 
 ## What is implemented
 
-- Admin overview, pending approval, Open → Claimed → Completed pipeline, scoped volunteer contact details, match reasons, delivery activity, volunteer invitations, manual reminders and automatic reminders after 48 hours.
-- Secondary verified feed with category, urgency, county, search, distance and sorting controls; My help; optional volunteer profiles and approximate browser location.
+- Admin overview and Open → Claimed → Completed pipeline, scoped volunteer contact details, match reasons, delivery activity, volunteer invitations, manual reminders and automatic reminders after 48 hours.
+- Approved caseworkers, county coordinators, and assistants publish needs directly; there is no second verification queue.
+- Secondary staff-posted feed with category, urgency, county, search, distance and sorting controls; My help; optional volunteer profiles and approximate browser location.
 - Email verification without volunteer accounts/passwords. New claim requests use 20-minute, single-use links. Matched email links use 72-hour, recipient-bound tokens and an explicit confirmation action to avoid email scanners claiming needs. Returning volunteers can claim in one tap with an HttpOnly session cookie.
 - Atomic database claims, organization-scoped foreign keys, staff memberships, RLS, private household records, server-only privileged RPCs, rate limits, input validation, and origin checks.
 - PostGIS distance, capability tags, availability windows, completed-category history, need recency, and notification recency throttle in scored matches.

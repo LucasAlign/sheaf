@@ -65,7 +65,6 @@ const demo: Summary = {
 const format = (s: string) =>
   new Date(s).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 const label = {
-  pending: "To approve",
   open: "Open",
   claimed: "Claimed",
   completed: "Completed",
@@ -77,7 +76,6 @@ export default function AdminDashboard({
   post,
   invite,
   select,
-  transition,
   remind,
   setTab,
 }: {
@@ -87,7 +85,6 @@ export default function AdminDashboard({
   post: () => void;
   invite: () => void;
   select: (n: Need) => void;
-  transition: (n: Need, s: Status) => void;
   remind: (n: Need) => void;
   setTab: (t: AdminTab) => void;
 }) {
@@ -114,15 +111,14 @@ export default function AdminDashboard({
       clearInterval(id);
     };
   }, [needs]);
-  const pending = needs.filter((n) => n.status === "pending");
   const open = needs.filter((n) => n.status === "open");
   const claimed = needs.filter((n) => n.status === "claimed");
   const completed = needs.filter((n) => n.status === "completed");
   const metrics = [
     {
       title: "Open needs",
-      count: pending.length + open.length,
-      detail: "Awaiting review or ready to be claimed",
+      count: open.length,
+      detail: "Posted and ready to be claimed",
       icon: Box,
       color: "pine",
     },
@@ -164,7 +160,7 @@ export default function AdminDashboard({
             {tab === "overview"
               ? "A clear view of the needs, people, and small acts moving your community forward."
               : tab === "pipeline"
-                ? "From a verified need to a promise kept."
+                ? "From a posted need to a promise kept."
                 : "Personal invitations to help, sent in thoughtful waves."}
           </p>
         </div>
@@ -193,7 +189,7 @@ export default function AdminDashboard({
       )}
       {tab === "pipeline" ? (
         <div className="pipeline">
-          {(["pending", "open", "claimed", "completed"] as Status[]).map(
+          {(["open", "claimed", "completed"] as Status[]).map(
             (status) => (
               <section className="pipeline-column" key={status}>
                 <h2>
@@ -219,15 +215,6 @@ export default function AdminDashboard({
                       <button className="text-button" onClick={() => select(n)}>
                         Review need <ArrowRight size={14} />
                       </button>
-                      {status === "pending" && (
-                        <button
-                          className="button primary full"
-                          disabled={busy}
-                          onClick={() => transition(n, "open")}
-                        >
-                          <ShieldCheck size={16} /> Verify & publish
-                        </button>
-                      )}
                       {status === "claimed" && (
                         <>
                           <button
@@ -259,11 +246,7 @@ export default function AdminDashboard({
                     </article>
                   ))}
                 {!needs.some((n) => n.status === status) && (
-                  <div className="column-empty">
-                    {status === "pending"
-                      ? "New needs wait here for your review."
-                      : "Nothing here yet."}
-                  </div>
+                  <div className="column-empty">Nothing here yet.</div>
                 )}
               </section>
             ),
@@ -299,7 +282,7 @@ export default function AdminDashboard({
                       </tr>
                     </thead>
                     <tbody>
-                      {[...pending, ...claimed, ...open, ...completed]
+                      {[...claimed, ...open, ...completed]
                         .slice(0, 6)
                         .map((n) => (
                           <tr key={n.id}>
@@ -355,8 +338,7 @@ export default function AdminDashboard({
                       <BridgeMark size={30} />
                       <h3>Your first need starts a connection.</h3>
                       <p>
-                        Post a need, verify it, and let Bridge find volunteers
-                        who fit.
+                        Post a need and let Bridge find volunteers who fit.
                       </p>
                       <button className="button primary" onClick={post}>
                         Post your first need <Plus size={16} />
@@ -366,7 +348,7 @@ export default function AdminDashboard({
                 </div>
                 <div className="panel-footer">
                   <ShieldCheck size={14} />
-                  <span>Only verified needs are shared with volunteers.</span>
+                  <span>Only approved staff can post needs.</span>
                   <span>{needs.length} total needs</span>
                 </div>
               </section>
@@ -452,8 +434,8 @@ export default function AdminDashboard({
                     ))
                   ) : (
                     <p>
-                      No emails have been queued yet. Approved needs and
-                      opted-in volunteers start the first wave.
+                      No emails have been queued yet. Open needs and opted-in
+                      volunteers start the first wave.
                     </p>
                   )}
                 </div>
@@ -479,29 +461,19 @@ export default function AdminDashboard({
               <div className="review-icon">
                 <ShieldCheck size={21} />
               </div>
-              <div className="eyebrow">A MOMENT OF CARE</div>
-              <h2>
-                {pending.length
-                  ? `${pending.length} ${pending.length === 1 ? "need is" : "needs are"} waiting for your yes.`
-                  : "A trusted start for every need."}
-              </h2>
+              <div className="eyebrow">TRUSTED STAFF WORKSPACE</div>
+              <h2>A direct path from need to help.</h2>
               <p>
-                {pending.length
-                  ? "Check the details and protect the family’s privacy. Then we’ll find the right people to help."
-                  : "Review each need before it reaches a volunteer. Your care makes every connection a little more certain."}
+                Approved caseworkers, county coordinators, and assistants can
+                post needs directly to the volunteer feed.
               </p>
-              <button
-                className="button secondary full"
-                onClick={() => (pending.length ? select(pending[0]) : post)}
-              >
-                {pending.length
-                  ? "Review the next need"
-                  : "Create a verified need"}
+              <button className="button secondary full" onClick={post}>
+                Post a need
                 <ArrowRight size={16} />
               </button>
               <span className="review-footnote">
                 <ShieldCheck size={13} />
-                Verified before it’s ever shared
+                Access is limited to approved staff
               </span>
             </section>
             <section className="volunteer-card">

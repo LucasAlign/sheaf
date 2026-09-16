@@ -49,7 +49,7 @@ export default async function handler(req: Request, res: Response) {
     const me = await identity(req, db, c.org);
     const staff = () => {
       if (!me.staff || !me.userId)
-        throw new HttpError(403, "Caseworker access is required.");
+        throw new HttpError(403, "Approved staff access is required.");
       return me.userId;
     };
     const volunteer = () => {
@@ -359,7 +359,10 @@ export default async function handler(req: Request, res: Response) {
           ...p,
           organization_id: c.org,
           created_by: user,
-          status: "pending",
+          approved_by: user,
+          approved_at: new Date().toISOString(),
+          status: "open",
+          next_wave_at: new Date().toISOString(),
           geolocation:
             latitude !== undefined
               ? `SRID=4326;POINT(${longitude} ${latitude})`
@@ -367,22 +370,6 @@ export default async function handler(req: Request, res: Response) {
         }),
       );
       return res.status(201).json({ ok: true });
-    }
-    if (action === "transition") {
-      const user = staff();
-      const p = z
-        .object({ need_id: uuid, status: z.enum(["open", "completed"]) })
-        .strict()
-        .parse(req.body);
-      await result(
-        db.rpc("transition_need", {
-          p_org: c.org,
-          p_need: p.need_id,
-          p_user: user,
-          p_status: p.status,
-        }),
-      );
-      return res.status(200).json({ ok: true });
     }
     if (action === "remind") {
       staff();

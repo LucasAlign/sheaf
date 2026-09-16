@@ -152,13 +152,11 @@ export function syncDemoNeeds(needs: Need[]) {
         (c) => c.volunteer_id === "demo-self" && c.quantity > 0,
       ),
       status:
-        n.status === "pending"
-          ? "pending"
-          : received >= required
-            ? "completed"
-            : committed >= required
-              ? "claimed"
-              : "open",
+        received >= required
+          ? "completed"
+          : committed >= required
+            ? "claimed"
+            : "open",
     } as Need;
   });
 }

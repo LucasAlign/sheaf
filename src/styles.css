@@ -21,3 +21,4 @@
 .ways>div>button{border:1px solid var(--line);padding:7px 9px;border-radius:5px;font-size:12px;color:var(--muted);text-align:left;min-height:34px}.ways>div>button[aria-pressed=true]{border-color:var(--pine);background:var(--soft);color:var(--pine)}
 
 .admin-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pipeline{grid-template-columns:repeat(3,minmax(0,1fr))}

@@ -31,7 +31,7 @@ The migration enables PostGIS in `extensions`. Use a dedicated database/project;
 
 The seed creates Keystone Family Alliance only, with no real family data and no invented needs. Organization ID: `c3206037-3638-4263-b18d-813a5895f1c8`.
 
-Invite the first staff user through Supabase Auth. For a Replit-backed installation, add that Auth UUID to both `auth.users` and `organization_members` in the Replit database; the commented membership example in the seed shows the organization and role values. Existing Supabase-backed installations add it in Supabase as before. No signup form can grant caseworker access. All staff can approve; self-approval is allowed in this MVP, while `created_by` and `approved_by` remain recorded.
+Invite the first staff user through Supabase Auth. For a Replit-backed installation, add that Auth UUID to both `auth.users` and `organization_members` in the Replit database; the commented membership example in the seed shows the organization and role values. Existing Supabase-backed installations add it in Supabase as before. No signup form can grant staff access. Supported roles are `admin`, `caseworker`, `county_coordinator`, and `assistant`. Approved staff publish needs directly, while `created_by`, `approved_by`, and `approved_at` retain the posting identity and publication time for auditing.
 
 Configure Supabase Auth’s site URL and allowed redirects to your exact deployment origin. Configure production SMTP (Resend SMTP may be used) for staff magic links. Volunteer links use Bridge’s Resend integration independently of Supabase Auth. There is no requirement to enable anonymous Supabase Auth users.
 
@@ -78,10 +78,10 @@ Email failures are retried at bounded intervals up to five attempts. Inspect the
 
 ## 5. First real workflow
 
-1. Sign in as the invited caseworker; confirm an unapproved account cannot access the workspace.
+1. Sign in as an invited staff member; confirm an unapproved account cannot access the workspace.
 2. Invite one consenting volunteer using their real email address.
 3. Have them confirm their email, save capabilities/location/availability, and opt into individual matches or a digest. New profiles default to no match emails until the volunteer chooses.
-4. Post a nonsensitive test need with a public meeting-point location and approve it. Never post family names, addresses, case notes, or identifying details.
+4. Post a nonsensitive test need with a public meeting-point location and confirm it appears immediately in the open feed. Never post family names, addresses, case notes, or identifying details.
 5. Run the scheduled job once, verify the branded email, follow its secure link, and confirm the claim. The portal must show the need as claimed and the caseworker must see the volunteer contact.
 6. Have the volunteer report delivery, then confirm the actual received quantity as staff. Test a three-dresser need with two received: release any unprovided commitment and verify one remains available. Completing the last unit must queue an email to the posting social worker.
 7. For an actual eligible gift, confirm donation details and record the receipt; verify the giver receives the email and text attachment. Check Reports → Giving report and export the CSV. Test a completed-year donor statement with approved test records.

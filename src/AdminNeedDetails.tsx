@@ -94,9 +94,8 @@ export default function AdminNeedDetails({ need }: { need: Need }) {
             ))
           ) : (
             <p>
-              {need.status === "pending"
-                ? "Matching begins after this need is verified."
-                : "No volunteer profiles match yet. Invite volunteers to build your circle of care."}
+              No volunteer profiles match yet. Invite volunteers to build your
+              circle of care.
             </p>
           )}
         </>

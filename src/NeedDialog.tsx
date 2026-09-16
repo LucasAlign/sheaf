@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MapPin, UserRound, ShieldCheck, Heart } from "lucide-react";
-import type { Need, Profile, Status } from "./types";
+import type { Need, Profile } from "./types";
 import Modal from "./Modal";
 import AdminNeedDetails from "./AdminNeedDetails";
 import NeedProgress, { needCounts } from "./NeedProgress";
@@ -14,7 +14,6 @@ export default function NeedDialog({
   busy,
   admin,
   close,
-  changeStatus,
   claim,
   onChange,
   updateNeed,
@@ -25,7 +24,6 @@ export default function NeedDialog({
   busy: boolean;
   admin: boolean;
   close: () => void;
-  changeStatus: (s: Status) => void;
   claim: (
     n: Need,
     w: string,
@@ -114,16 +112,6 @@ export default function NeedDialog({
         Needed by {new Date(need.needed_by).toLocaleDateString()}
       </p>
       {admin && need.status === "open" && <AdminNeedDetails need={need} />}
-      {admin && need.status === "pending" && (
-        <button
-          className="button primary full"
-          disabled={busy}
-          onClick={() => changeStatus("open")}
-        >
-          <ShieldCheck size={16} />
-          Verify & publish
-        </button>
-      )}
       {(admin || need.claimed_by_me) && (
         <FulfillmentPanel need={need} admin={admin} onChange={onChange} />
       )}
